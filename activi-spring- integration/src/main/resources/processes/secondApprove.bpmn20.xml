@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="second_approve" name="二级审批流程" isExecutable="true">
+  <process id="process2015101309111201" name="二级审批流程" isExecutable="true">
     <startEvent id="startevent" name="Start">
       <!-- 定时任务 执行流程  job执行器启动之后每10s执行一次，一共执行5次 开启5个流程-->
-      <timerEventDefinition>
+      <!--<timerEventDefinition>
         <timeCycle> R5/PT10S</timeCycle>
-      </timerEventDefinition>
+      </timerEventDefinition>-->
     </startEvent>
     <userTask id="usertask1" name="用户填写提交信息">
       <extensionElements>

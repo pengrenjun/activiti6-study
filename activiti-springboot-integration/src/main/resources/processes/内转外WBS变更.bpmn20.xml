@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="process2015101309111202" name="内转外WBS变更" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="end" delegateExpression="${processSendMailListener}"></activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="usertask2015101301" name="任务经理变更">
+      <documentation>taskManagerChange_usertask_test1_3_usertask2015101301_startUser</documentation>
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${assignmentListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="true" activiti:collection="${taskUserAssignListener.getMultipleUser(execution)}" activiti:elementVariable="assignee"></multiInstanceLoopCharacteristics>
+    </userTask>
+    <userTask id="usertask2015101302" name="接口人审批">
+      <documentation>interfaceApproval_usertask_test1_2_usertask2015101302</documentation>
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${assignmentListener}"></activiti:taskListener>
+        <activiti:taskListener event="assignment" delegateExpression="${taskSendMailListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${taskUserAssignListener.getMultipleUser(execution)}" activiti:elementVariable="assignee"></multiInstanceLoopCharacteristics>
+    </userTask>
+    <userTask id="usertask2015101303" name="销售确认">
+      <documentation>salesConfirmation_usertask_saleUser_2_usertask2015101303</documentation>
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${assignmentListener}"></activiti:taskListener>
+        <activiti:taskListener event="assignment" delegateExpression="${taskSendMailListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${taskUserAssignListener.getMultipleUser(execution)}" activiti:elementVariable="assignee"></multiInstanceLoopCharacteristics>
+    </userTask>
+    <userTask id="usertask2015101304" name="任务经理确认">
+      <documentation>taskManagerConfirmation_usertask_test1_3_usertask2015101304_startUser</documentation>
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${assignmentListener}"></activiti:taskListener>
+        <activiti:taskListener event="assignment" delegateExpression="${taskSendMailListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${taskUserAssignListener.getMultipleUser(execution)}" activiti:elementVariable="assignee"></multiInstanceLoopCharacteristics>
+    </userTask>
+    <userTask id="usertask2015101305" name="商务确认">
+      <documentation>businessConfirmation_usertask_test1_2_usertask2015101305</documentation>
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${assignmentListener}"></activiti:taskListener>
+        <activiti:taskListener event="assignment" delegateExpression="${taskSendMailListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${taskUserAssignListener.getMultipleUser(execution)}" activiti:elementVariable="assignee"></multiInstanceLoopCharacteristics>
+    </userTask>
+    <endEvent id="end" name="结束流程"></endEvent>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow13" sourceRef="startevent1" targetRef="usertask2015101301"></sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="usertask2015101301" targetRef="usertask2015101302"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="usertask2015101302" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="exclusivegateway2" targetRef="usertask2015101303">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isPriceExceeds==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow17" sourceRef="exclusivegateway2" targetRef="usertask2015101304">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isPriceExceeds==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow18" sourceRef="usertask2015101303" targetRef="usertask2015101304"></sequenceFlow>
+    <sequenceFlow id="flow19" sourceRef="usertask2015101304" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="exclusivegateway1" targetRef="usertask2015101305">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isTotalPriceExceeds==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow22" sourceRef="exclusivegateway1" targetRef="end">
+      <extensionElements>
+        <activiti:executionListener event="take" delegateExpression="${signalListener}"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isTotalPriceExceeds==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow23" sourceRef="usertask2015101305" targetRef="end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_process2015101309111202">
+    <bpmndi:BPMNPlane bpmnElement="process2015101309111202" id="BPMNPlane_process2015101309111202">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="243.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2015101301" id="BPMNShape_usertask2015101301">
+        <omgdc:Bounds height="55.0" width="105.0" x="208.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2015101302" id="BPMNShape_usertask2015101302">
+        <omgdc:Bounds height="55.0" width="105.0" x="208.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2015101303" id="BPMNShape_usertask2015101303">
+        <omgdc:Bounds height="55.0" width="105.0" x="450.0" y="269.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2015101304" id="BPMNShape_usertask2015101304">
+        <omgdc:Bounds height="55.0" width="105.0" x="208.0" y="359.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2015101305" id="BPMNShape_usertask2015101305">
+        <omgdc:Bounds height="55.0" width="105.0" x="460.0" y="473.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+        <omgdc:Bounds height="35.0" width="35.0" x="243.0" y="575.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="240.0" y="480.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="240.0" y="276.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="260.0" y="35.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="260.0" y="125.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="170.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="260.0" y="225.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="276.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="280.0" y="296.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="296.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="260.0" y="316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="359.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="502.0" y="324.0"></omgdi:waypoint>
+        <omgdi:waypoint x="504.0" y="386.0"></omgdi:waypoint>
+        <omgdi:waypoint x="313.0" y="386.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="260.0" y="414.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="480.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="280.0" y="500.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="500.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="260.0" y="520.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="575.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="512.0" y="528.0"></omgdi:waypoint>
+        <omgdi:waypoint x="512.0" y="592.0"></omgdi:waypoint>
+        <omgdi:waypoint x="278.0" y="592.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

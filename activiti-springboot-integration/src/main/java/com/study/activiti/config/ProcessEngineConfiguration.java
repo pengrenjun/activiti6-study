@@ -4,6 +4,8 @@ import com.study.activiti.eventlistener.CustomerEventListener;
 import com.study.activiti.interceptor.CustomerPreCommandInteraptor;
 import com.study.activiti.interceptor.MdcCommandInvoker;
 import com.study.activiti.eventlistener.ProcessEventListener;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.impl.asyncexecutor.DefaultAsyncJobExecutor;
@@ -11,6 +13,7 @@ import org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.activiti.engine.impl.history.HistoryLevel;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.activiti.engine.impl.interceptor.CommandInterceptor;
+import org.activiti.spring.ProcessEngineFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,40 +42,60 @@ public class ProcessEngineConfiguration {
         processEngineConfiguration.setDatabaseSchemaUpdate("true");
 
         //配置LogMdc 打印流程过程中的日志信息
-        processEngineConfiguration.setCommandExecutor((CommandExecutor)getMdcCommandInvoker());
+        //processEngineConfiguration.setCommandExecutor((CommandExecutor)getMdcCommandInvoker());
         //流程引擎历史数据的保存记录默认级别 activiti
         processEngineConfiguration.setHistory(HistoryLevel.ACTIVITY.getKey());
         //配置开启基于事件的DB日志配置
         processEngineConfiguration.setEnableDatabaseEventLogging(true);
 
 
-        List<ActivitiEventListener> eventListenerList = Collections.emptyList();
-        //全局的流程事件监听器
-        eventListenerList.add(new ProcessEventListener());
-        //自定义事件监听器
-        eventListenerList.add(new CustomerEventListener());
-        //添加事件监听器
-        processEngineConfiguration.setEventListeners(eventListenerList);
+//        List<ActivitiEventListener> eventListenerList = Collections.emptyList();
+//        //全局的流程事件监听器
+//        eventListenerList.add((ActivitiEventListener)new ProcessEventListener());
+//        //自定义事件监听器
+//        eventListenerList.add((ActivitiEventListener)new CustomerEventListener());
+//        //添加事件监听器
+//        processEngineConfiguration.setEventListeners(eventListenerList);
 
-        //特定类型事件操作的监听配置
-        //setTypedEventListeners(Map<String, List<ActivitiEventListener>> typedListeners) {
-        Map<String, List<ActivitiEventListener>> typedListeners=new HashMap<>();
-        typedListeners.put(ActivitiEventType.PROCESS_STARTED.name(),eventListenerList);
-        processEngineConfiguration.setTypedEventListeners(typedListeners);
-
-        //添加配置命令执行前拦截器
-        List<CommandInterceptor > customPreCommandInterceptors=Collections.emptyList();
-        customPreCommandInterceptors.add(new CustomerPreCommandInteraptor());
-        processEngineConfiguration.setCustomPreCommandInterceptors(customPreCommandInterceptors);
-
-        //配置job执行器
-        //激活job执行器
-        processEngineConfiguration.setAsyncExecutorActivate(true);
-        //配置activit的异步执行器
-        processEngineConfiguration.setAsyncExecutor(getAsyncJobExecutor());
+//        //特定类型事件操作的监听配置
+//        //setTypedEventListeners(Map<String, List<ActivitiEventListener>> typedListeners) {
+//        Map<String, List<ActivitiEventListener>> typedListeners=new HashMap<>();
+//        typedListeners.put(ActivitiEventType.PROCESS_STARTED.name(),eventListenerList);
+//        processEngineConfiguration.setTypedEventListeners(typedListeners);
+//
+//        //添加配置命令执行前拦截器
+//        List<CommandInterceptor > customPreCommandInterceptors=Collections.emptyList();
+//        customPreCommandInterceptors.add(new CustomerPreCommandInteraptor());
+//        processEngineConfiguration.setCustomPreCommandInterceptors(customPreCommandInterceptors);
+//
+//        //配置job执行器
+//        //激活job执行器
+//        processEngineConfiguration.setAsyncExecutorActivate(true);
+//        //配置activit的异步执行器
+//        processEngineConfiguration.setAsyncExecutor(getAsyncJobExecutor());
         return processEngineConfiguration;
     }
 
+    //流程引擎工厂配置
+    @Bean("processEngineFactoryBean")
+    public ProcessEngineFactoryBean processEngineFactoryBean(){
+        ProcessEngineFactoryBean processEngineFactoryBean=new ProcessEngineFactoryBean();
+        processEngineFactoryBean.setProcessEngineConfiguration(setProcessEngineConfiguration());
+        return  processEngineFactoryBean;
+    }
+
+    @Bean("repositoryService")
+    public RepositoryService repositoryService() throws Exception {
+        RepositoryService repositoryService=processEngineFactoryBean().getObject().getRepositoryService();
+        return repositoryService;
+    }
+
+    @Bean("runtimeService")
+    public RuntimeService runtimeService() throws Exception {
+        RuntimeService runtimeService=processEngineFactoryBean().getObject().getRuntimeService();
+        return runtimeService;
+
+    }
 
 
     @Bean(name="asyncJobExecutor")
@@ -100,11 +123,9 @@ public class ProcessEngineConfiguration {
     }
 
 
-    @Bean(name="mdcCommandInvoker")
+   /* @Bean(name="mdcCommandInvoker")
     public MdcCommandInvoker getMdcCommandInvoker(){
         return new MdcCommandInvoker();
-    }
-
-
+    }*/
 
 }
