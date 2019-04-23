@@ -132,12 +132,80 @@ public class RuntimeServicerTest {
         System.out.println(usertask);
     }
 
+    //signal触发任务执行
+    @Test
+    public void testF(){
+
+        ProcessInstanceBuilder processInstanceBuilder=runtimeService.createProcessInstanceBuilder();
+
+        ProcessInstance processInstance = processInstanceBuilder
+                .processDefinitionKey("myProcess-signal")
+                .start();
+
+        //查询执行流程任务(待触发执行)
+        //signal触发是全局的，不需要指定任务流执行id
+        Execution usertask1 = runtimeService.
+                createExecutionQuery()
+                .signalEventSubscriptionName("usertask1signal").singleResult();
+
+        //Execution[ id '35002' ] - activity 'usertask1-signal-received - parent '35001'
+        System.out.println(usertask1);
+
+        //signal触发执行任务
+        runtimeService.signalEventReceived("usertask1signal");
+
+        //任务已经执行完毕
+        Execution usertask = runtimeService.createExecutionQuery()
+                .signalEventSubscriptionName("usertask1signal").singleResult();
+
+        //null
+        System.out.println(usertask);
+
+
+    }
+
+    //message触发任务流执行
+    @Test
+    public void testG(){
+
+        ProcessInstanceBuilder processInstanceBuilder=runtimeService.createProcessInstanceBuilder();
+
+        ProcessInstance processInstance = processInstanceBuilder
+                .processDefinitionKey("myProcess-message")
+                .start();
+
+        //查询执行流程任务(待触发执行)
+
+        Execution usertask1 = runtimeService.
+                createExecutionQuery().processInstanceId(processInstance.getProcessInstanceId())
+                .messageEventSubscriptionName("usertask1-message").singleResult();
+
+
+        //Execution[ id '42502' ] - activity 'myProcess-message-received - parent '42501'
+        System.out.println(usertask1);
+
+        //mesage触发执行任务
+        //mesage需要指定任务流执行id进行任务流的执行
+        runtimeService.messageEventReceived("usertask1-message",usertask1.getId());
+
+        //任务已经执行完毕
+        Execution usertask = runtimeService.createExecutionQuery()
+                .signalEventSubscriptionName("usertask1-message").singleResult();
+
+        //null
+        System.out.println(usertask);
+    }
+
+
+
+
+
     //查询当前流程执行中的对象
     @Test
     public void getexecutionList(){
 
         List<Execution> executionList =
-                runtimeService.createExecutionQuery().processDefinitionKey("myProcess-trigger").list();
+                runtimeService.createExecutionQuery().processDefinitionKey("myProcess-message").list();
 
         System.out.println(executionList);
 

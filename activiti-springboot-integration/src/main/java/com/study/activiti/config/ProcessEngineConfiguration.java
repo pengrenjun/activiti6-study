@@ -6,6 +6,7 @@ import com.study.activiti.interceptor.MdcCommandInvoker;
 import com.study.activiti.eventlistener.ProcessEventListener;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.impl.asyncexecutor.DefaultAsyncJobExecutor;
@@ -94,7 +95,12 @@ public class ProcessEngineConfiguration {
     public RuntimeService runtimeService() throws Exception {
         RuntimeService runtimeService=processEngineFactoryBean().getObject().getRuntimeService();
         return runtimeService;
+    }
 
+    @Bean("taskService")
+    public TaskService taskService() throws Exception {
+        TaskService taskService=processEngineFactoryBean().getObject().getTaskService();
+        return taskService;
     }
 
 
